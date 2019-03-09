@@ -6,6 +6,9 @@ import lombok.Getter;
 @Getter
 public class Args {
 
+  @Parameter
+  private String command;
+
   @Parameter(names = { "-h", "--hostname" }, description = "Hostname to connect to")
   private String hostname = "127.0.0.1";
 
