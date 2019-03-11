@@ -1,4 +1,4 @@
-package de.codehat.teamspeak.afkbot;
+package de.codehat.teamspeak3.afkbot;
 
 import com.beust.jcommander.Parameter;
 import lombok.Getter;
@@ -36,31 +36,52 @@ public class Args {
   private String password;
 
   @Parameter(
+      names = {"-a", "--afk-channel"},
+      description = "ID of the channel where idle clients are moved to",
+      required = true,
+      order = 4
+  )
+  private Integer afkChannelId;
+
+  @Parameter(
       names = {"-i", "--id"},
       description = "Id of the virtual server",
-      order = 4)
+      order = 5)
   private Integer virtualServerId = 1;
 
   @Parameter(
       names = {"-n", "--nickname"},
       description = "Nickname for the bot",
-      order = 5)
+      order = 6)
   private String nickname = "TS3 AFK Bot";
 
   @Parameter(
-      names = {"-a", "--afk-channel"},
-      description = "ID of the channel where idle clients are moved to",
-      required = true,
-      order = 6
+      names = {"-c", "--check-period"},
+      description = "How often is checked for idle clients in seconds",
+      order = 7
   )
-  private Integer afkChannelId;
+  private Integer checkPeriod = 5;
+
+  @Parameter(
+      names = "--move-muted",
+      description = "After how many seconds are idle muted clients moved",
+      order = 8
+  )
+  private Integer moveMutedThreshold = 5 * 60;
+
+  @Parameter(
+      names = "--move-not-muted",
+      description = "After how many seconds are idle not muted clients moved",
+      order = 9
+  )
+  private Integer moveNotMutedThreshold = 10 * 60;
 
   @Parameter(
       names = {"-d", "--debug"},
       description = "More verbose logging",
-      order = 7)
+      order = 10)
   private boolean debug = false;
 
-  @Parameter(names = "--help", description = "Shows help page", help = true, order = 8)
+  @Parameter(names = "--help", description = "Shows help page", help = true, order = 11)
   private boolean help;
 }

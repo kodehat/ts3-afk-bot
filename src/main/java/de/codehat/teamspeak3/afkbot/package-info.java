@@ -1,1 +1,1 @@
-package de.codehat.teamspeak.afkbot;
+package de.codehat.teamspeak3.afkbot;

@@ -1,4 +1,4 @@
-package de.codehat.teamspeak.afkbot;
+package de.codehat.teamspeak3.afkbot;
 
 import com.beust.jcommander.JCommander;
 import org.tinylog.Logger;
@@ -40,7 +40,10 @@ public class Main {
             readArgs.getPassword(),
             readArgs.getVirtualServerId(),
             readArgs.getNickname(),
-            readArgs.getAfkChannelId());
+            readArgs.getAfkChannelId(),
+            readArgs.getCheckPeriod(),
+            readArgs.getMoveMutedThreshold(),
+            readArgs.getMoveNotMutedThreshold());
 
     bot.connect();
     bot.startRepeatingCheck();
