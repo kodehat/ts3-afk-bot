@@ -5,11 +5,9 @@ import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.tinylog.Logger;
 
 public class TS3AfkBot {
-  private static final Logger log = LoggerFactory.getLogger(TS3AfkBot.class.getName());
 
   private static final long IDLE_CHECK = 5000L;
 
@@ -91,7 +89,7 @@ public class TS3AfkBot {
     if (connected) {
       return;
     }
-    log.info(
+    Logger.info(
         "Connecting to '{}:{}' as '{}' with nickname '{}'...", host, queryPort, username, nickname);
     connected = true;
 
@@ -109,7 +107,7 @@ public class TS3AfkBot {
       return;
     }
     checking = true;
-    log.info(
+    Logger.info(
         "Checking for idle player every {} seconds.", TimeUnit.MILLISECONDS.toSeconds(IDLE_CHECK));
 
     idleCheckTask = new Timer();

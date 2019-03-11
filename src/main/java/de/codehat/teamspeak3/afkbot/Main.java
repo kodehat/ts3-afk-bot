@@ -1,11 +1,10 @@
 package de.codehat.teamspeak.afkbot;
 
 import com.beust.jcommander.JCommander;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.tinylog.Logger;
+import org.tinylog.configuration.Configuration;
 
 public class Main {
-  private static final Logger log = LoggerFactory.getLogger(Main.class.getName());
 
   private static TS3AfkBot bot;
 
@@ -25,7 +24,12 @@ public class Main {
     }
     // Set debug if requested.
     if (readArgs.isDebug()) {
-      // TODO: Check if debug is enabled and modify logger.
+      Configuration.set("writer.level", "debug");
+      Configuration.set(
+          "writer.format", "{date} [{thread}] {class}.{method}()\n{level}: {message}");
+    } else {
+      Configuration.set("writer.level", "info");
+      Configuration.set("writer.format", "{level}: {message|indent=4}");
     }
 
     bot =
@@ -42,7 +46,7 @@ public class Main {
     bot.startRepeatingCheck();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-      log.info("Shutting down bot...");
+      Logger.info("Shutting down bot...");
       bot.getQuery().exit();
     }));
   }

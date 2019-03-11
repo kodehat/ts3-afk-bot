@@ -9,11 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.tinylog.Logger;
 
 public class IdleCheckTask extends TimerTask {
-  private static final Logger log = LoggerFactory.getLogger(IdleCheckTask.class.getName());
 
   private static final long MAX_IDLE_TIME_MUTED = 5 * 60L; // 5 minutes
   private static final long MAX_IDLE_TIME_NOT_MUTED = 10 * 60L; // 10 minutes
@@ -43,7 +41,7 @@ public class IdleCheckTask extends TimerTask {
 
   @Override
   public void run() {
-    log.info("Let's see who's idling around!?");
+    Logger.debug("Let's see who's idling around!?");
 
     // Get a fresh piece of channels and clients.
     refreshChannels();
@@ -56,7 +54,7 @@ public class IdleCheckTask extends TimerTask {
           // Check if client isn't already in AFK channel and if it's not the bot itself.
           if (canBeMoved(client)
               && (isClientIdleAndNotMuted(client) || isClientIdleAndMuted(client))) {
-            log.info(
+            Logger.info(
                 "Client '{}' is idling for '{}'. Moving it to AFK channel!",
                 client.getNickname(),
                 client.getIdleTime());
@@ -65,7 +63,7 @@ public class IdleCheckTask extends TimerTask {
             try {
               api.moveClient(client.getId(), afkChannelId);
             } catch (TS3CommandFailedException e) {
-              log.error("Unable to move client '{}'!", client.getNickname());
+              Logger.error(e, "Unable to move client '{}'!", client.getNickname());
             }
 
             // Inform client about move.
