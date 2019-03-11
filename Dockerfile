@@ -13,7 +13,10 @@ ENV checkPeriod 5
 ENV moveMutedThreshold 300
 ENV moveNotMutedThreshold 600
 
-CMD ["sh", "-c", "java -jar build/libs/ts3-afk-bot.jar \
+RUN mkdir /opt/app
+COPY build/libs/ts3-afk-bot.jar /opt/app
+
+CMD ["sh", "-c", "java -jar /opt/app/ts3-afk-bot.jar \
      -h ${host} -q ${queryPort} \
      -u ${username} -p ${password} \
      -a ${afkChannelId} -n ${nickname} \
