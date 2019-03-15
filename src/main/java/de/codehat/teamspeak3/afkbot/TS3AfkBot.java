@@ -3,11 +3,53 @@ package de.codehat.teamspeak3.afkbot;
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
+import com.github.theholywaffle.teamspeak3.api.TextMessageTargetMode;
+import com.github.theholywaffle.teamspeak3.api.event.TS3EventAdapter;
+import com.github.theholywaffle.teamspeak3.api.event.TS3EventType;
+import com.github.theholywaffle.teamspeak3.api.event.TextMessageEvent;
 import java.util.Timer;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.tinylog.Logger;
 
 public class TS3AfkBot {
+
+  private class ChatListener extends TS3EventAdapter {
+
+    private final TS3Api api;
+    private final int ownId;
+
+    public ChatListener(TS3Api api) {
+      this.api = api;
+
+      ownId = api.whoAmI().getId();
+    }
+
+    @Override
+    public void onTextMessage(TextMessageEvent e) {
+      int senderId = e.getInvokerId();
+
+      if (e.getTargetMode() != TextMessageTargetMode.CLIENT || senderId == ownId) {
+        return;
+      }
+
+      if (e.getMessage().trim().equalsIgnoreCase("!toggle")) {
+        boolean result = TS3ClientIgnoreList.getInstance().toggle(senderId);
+
+        if (result) {
+          api.sendPrivateMessage(senderId, "You are now not being moved!");
+        } else {
+          api.sendPrivateMessage(senderId, "You are now being moved, if AFK!");
+        }
+      } else if (e.getMessage().trim().equalsIgnoreCase("!list")) {
+        String ignoredClients = TS3ClientIgnoreList.getInstance().getIgnoredClients()
+            .stream()
+            .map((clientId) -> api.getClientInfo(clientId).getNickname())
+            .collect(Collectors.joining(", "));
+        api.sendPrivateMessage(senderId, "Ignored clients: " + ignoredClients);
+      }
+    }
+  }
 
   private static final Long IDLE_CHECK_DELAY = 500L;
 
@@ -24,6 +66,7 @@ public class TS3AfkBot {
 
   private boolean connected = false;
   private boolean checking = false;
+  private boolean chatListening = false;
 
   private TS3Config config;
   private TS3Query query;
@@ -125,6 +168,16 @@ public class TS3AfkBot {
         new IdleCheckTask(api, afkChannelId, moveMutedClientPeriod, moveNotMutedClientPeriod),
         IDLE_CHECK_DELAY,
         idleCheckPeriod);
+  }
+
+  public void startChatListening() {
+    if (chatListening) {
+      return;
+    }
+    chatListening = true;
+
+    api.registerEvent(TS3EventType.TEXT_PRIVATE);
+    api.addTS3Listeners(new ChatListener(api));
   }
 
   private Long getIdleCheckPeriod() {

@@ -47,6 +47,7 @@ public class Main {
 
     bot.connect();
     bot.startRepeatingCheck();
+    bot.startChatListening();
 
     Runtime.getRuntime().addShutdownHook(new Thread(() -> {
       Logger.info("Shutting down bot...");

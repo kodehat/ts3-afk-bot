@@ -60,9 +60,9 @@ public class IdleCheckTask extends TimerTask {
           if (canBeMoved(client)
               && (isClientIdleAndNotMuted(client) || isClientIdleAndMuted(client))) {
             Logger.info(
-                "Client '{}' is idling for '{}'. Moving it to AFK channel!",
+                "Client '{}' is idling for {} seconds. Moving it to AFK channel!",
                 client.getNickname(),
-                client.getIdleTime());
+                idleTime);
 
             // Move client. May throw exception if moving is not allowed or something weird happens.
             TS3Helper.safeExecute(
@@ -84,7 +84,8 @@ public class IdleCheckTask extends TimerTask {
   }
 
   private boolean canBeMoved(Client c) {
-    return c.getId() != botClientId && c.getChannelId() != afkChannelId;
+    return c.getId() != botClientId && c.getChannelId() != afkChannelId
+        && c.isRegularClient() && !TS3ClientIgnoreList.getInstance().contains(c);
   }
 
   private boolean isClientIdleAndMuted(final Client c) {

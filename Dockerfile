@@ -19,7 +19,7 @@ COPY build/libs/ts3-afk-bot.jar /opt/app
 CMD ["sh", "-c", "java -jar /opt/app/ts3-afk-bot.jar \
      -h ${host} -q ${queryPort} \
      -u ${username} -p ${password} \
-     -a ${afkChannelId} -n ${nickname} \
+     -a ${afkChannelId} -n '${nickname}' \
      -c ${checkPeriod} \
      --move-muted ${moveMutedThreshold} --move-not-muted ${moveNotMutedThreshold} \
      ${additionalArgs}"]
