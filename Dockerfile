@@ -20,7 +20,6 @@ ENV moveMutedThreshold 300
 ENV moveNotMutedThreshold 600
 
 RUN mkdir /opt/app
-COPY build/libs/ts3-afk-bot.jar /opt/app
 COPY --from=builder /home/gradle/src/build/libs/ts3-afk-bot.jar /opt/app/
 
 CMD ["sh", "-c", "java -jar /opt/app/ts3-afk-bot.jar \
