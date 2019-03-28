@@ -1,4 +1,4 @@
-package de.codehat.teamspeak3.afkbot;
+package de.codehat.teamspeak.afkbot;
 
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import java.util.HashSet;
@@ -10,12 +10,12 @@ public class TS3ClientIgnoreList {
 
   private Set<Integer> ignoredClients;
 
-  public static TS3ClientIgnoreList getInstance() {
-    return ourInstance;
-  }
-
   private TS3ClientIgnoreList() {
     this.ignoredClients = new HashSet<>();
+  }
+
+  public static TS3ClientIgnoreList getInstance() {
+    return ourInstance;
   }
 
   public boolean contains(int clientId) {
@@ -26,23 +26,23 @@ public class TS3ClientIgnoreList {
     return contains(client.getId());
   }
 
-  public boolean ignore(int clientId) {
+  public synchronized boolean ignore(int clientId) {
     return ignoredClients.add(clientId);
   }
 
-  public boolean ignore(Client client) {
+  public synchronized boolean ignore(Client client) {
     return ignore(client.getId());
   }
 
-  public boolean listen(int clientId) {
+  public synchronized boolean listen(int clientId) {
     return ignoredClients.remove(clientId);
   }
 
-  public boolean listen(Client client) {
+  public synchronized boolean listen(Client client) {
     return listen(client.getId());
   }
 
-  public boolean toggle(int clientId) {
+  public synchronized boolean toggle(int clientId) {
     if (!contains(clientId)) {
       ignore(clientId);
       return true;
@@ -52,7 +52,7 @@ public class TS3ClientIgnoreList {
     }
   }
 
-  public boolean toggle(Client client) {
+  public synchronized boolean toggle(Client client) {
     return toggle(client.getId());
   }
 

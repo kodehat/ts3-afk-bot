@@ -1,6 +1,9 @@
+import com.github.spotbugs.SpotBugsTask
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.0.0'
-    id 'io.freefair.lombok' version '3.1.4'
+    id 'com.github.spotbugs' version '1.7.1'
+    id 'io.freefair.lombok' version '3.2.0'
     id 'jacoco'
     id 'java'
 }
@@ -8,19 +11,22 @@ plugins {
 group 'de.codehat'
 version '1.0.0-SNAPSHOT'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
     implementation 'com.github.theholywaffle:teamspeak3-api:1.2.0'
     implementation 'org.slf4j:slf4j-nop:1.7.26'
     implementation 'org.tinylog:tinylog-impl:2.0.0-M3'
-    implementation 'com.beust:jcommander:1.72'
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.4.0")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.4.0")
+    implementation 'com.beust:jcommander:1.74'
+    implementation 'org.aeonbits.owner:owner:1.0.10'
+    implementation 'com.google.inject:guice:4.2.2:no_aop'
+    testCompile('org.junit.jupiter:junit-jupiter-api:5.4.0')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.0')
 }
 
 test {
@@ -30,13 +36,36 @@ test {
     }
 }
 
+// See: https://stackoverflow.com/a/51918271/9369359
+ext.moduleName = 'de.codehat.teamspeak.afkbot'
+compileJava {
+    inputs.property('moduleName', moduleName)
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath
+        ]
+        classpath = files()
+    }
+}
+
+tasks.withType(SpotBugsTask) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
 jar {
     manifest {
-        attributes 'Main-Class': 'de.codehat.teamspeak3.afkbot.Main'
+        attributes 'Main-Class': 'de.codehat.teamspeak.afkbot.Main'
     }
 }
 
 shadowJar {
     classifier = null
     version = null
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
 }

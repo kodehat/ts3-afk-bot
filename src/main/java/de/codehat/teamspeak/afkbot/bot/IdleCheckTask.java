@@ -1,8 +1,12 @@
-package de.codehat.teamspeak3.afkbot;
+package de.codehat.teamspeak.afkbot.bot;
 
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Channel;
 import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
+import com.google.inject.Inject;
+import de.codehat.teamspeak.afkbot.TS3ClientIgnoreList;
+import de.codehat.teamspeak.afkbot.TS3Helper;
+import de.codehat.teamspeak.afkbot.config.TS3BotConfig;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,10 +16,8 @@ import org.tinylog.Logger;
 
 public class IdleCheckTask extends TimerTask {
 
+  private final TS3BotConfig botConfig;
   private final TS3Api api;
-  private final Integer afkChannelId;
-  private final Long moveMutedClientPeriod;
-  private final Long moveNotMutedClientPeriod;
 
   private Integer botClientId;
 
@@ -29,17 +31,11 @@ public class IdleCheckTask extends TimerTask {
    * the defined AFK channel.
    *
    * @param api TS3 API instance
-   * @param afkChannelId id of the AFK channel
    */
-  public IdleCheckTask(
-      TS3Api api,
-      Integer afkChannelId,
-      Integer moveMutedClientPeriod,
-      Integer moveNotMutedClientPeriod) {
+  @Inject
+  IdleCheckTask(final TS3BotConfig botConfig, final TS3Api api) {
+    this.botConfig = botConfig;
     this.api = api;
-    this.afkChannelId = afkChannelId;
-    this.moveMutedClientPeriod = moveMutedClientPeriod.longValue();
-    this.moveNotMutedClientPeriod = moveNotMutedClientPeriod.longValue();
 
     TS3Helper.safeExecute(() -> botClientId = api.whoAmI().getId());
   }
@@ -66,7 +62,7 @@ public class IdleCheckTask extends TimerTask {
 
             // Move client. May throw exception if moving is not allowed or something weird happens.
             TS3Helper.safeExecute(
-                () -> api.moveClient(client.getId(), afkChannelId),
+                () -> api.moveClient(client.getId(), botConfig.afkChannelId()),
                 "Unable to move client '{}'!",
                 client.getNickname());
 
@@ -75,27 +71,30 @@ public class IdleCheckTask extends TimerTask {
                 client.getId(),
                 "You have been moved, because you're idling for " + idleTime + " seconds.");
             // Inform channel that client was moved.
-//            api.sendChannelMessage(
-//                channel.getId(),
-//                String.format(
-//                    "Client %s was moved, because he was idling too long.", client.getNickname()));
+            //            api.sendChannelMessage(
+            //                channel.getId(),
+            //                String.format(
+            //                    "Client %s was moved, because he was idling too long.",
+            // client.getNickname()));
           }
         });
   }
 
   private boolean canBeMoved(Client c) {
-    return c.getId() != botClientId && c.getChannelId() != afkChannelId
-        && c.isRegularClient() && !TS3ClientIgnoreList.getInstance().contains(c);
+    return c.getId() != botClientId
+        && c.getChannelId() != botConfig.afkChannelId()
+        && c.isRegularClient()
+        && !TS3ClientIgnoreList.getInstance().contains(c);
   }
 
   private boolean isClientIdleAndMuted(final Client c) {
     long idleTime = TimeUnit.MILLISECONDS.toSeconds(c.getIdleTime());
-    return idleTime > moveMutedClientPeriod && (c.isInputMuted() || c.isOutputMuted());
+    return idleTime > botConfig.moveMutedThreshold() && (c.isInputMuted() || c.isOutputMuted());
   }
 
   private boolean isClientIdleAndNotMuted(final Client c) {
     long idleTime = TimeUnit.MILLISECONDS.toSeconds(c.getIdleTime());
-    return idleTime > moveNotMutedClientPeriod && !c.isInputMuted() && !c.isOutputMuted();
+    return idleTime > botConfig.moveListeningThreshold() && !c.isInputMuted() && !c.isOutputMuted();
   }
 
   private void refreshChannels() {

@@ -1,1 +1,0 @@
-package de.codehat.teamspeak3.afkbot;

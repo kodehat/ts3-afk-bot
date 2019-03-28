@@ -1,4 +1,4 @@
-package de.codehat.teamspeak3.afkbot;
+package de.codehat.teamspeak.afkbot;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
