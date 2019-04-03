@@ -1,7 +1,6 @@
 package de.codehat.teamspeak.afkbot;
 
 import com.github.theholywaffle.teamspeak3.api.exception.TS3Exception;
-import java.util.function.Supplier;
 import org.tinylog.Logger;
 
 public final class TS3Helper {

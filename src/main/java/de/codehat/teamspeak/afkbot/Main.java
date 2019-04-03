@@ -1,6 +1,8 @@
 package de.codehat.teamspeak.afkbot;
 
 import com.beust.jcommander.JCommander;
+import com.github.theholywaffle.teamspeak3.TS3Api;
+import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -16,11 +18,13 @@ public class Main {
 
   private final TS3AfkBot bot;
   private final TS3Query query;
+  private final TS3BotConfig botConfig;
 
   @Inject
-  Main(final TS3AfkBot bot, final TS3Query query) {
+  Main(final TS3AfkBot bot, final TS3Query query, final TS3BotConfig botConfig) {
     this.bot = bot;
     this.query = query;
+    this.botConfig = botConfig;
   }
 
   /**
@@ -61,6 +65,21 @@ public class Main {
     final TS3Query query = injector.getInstance(TS3Query.class);
     query.connect();
 
+    if (query.isConnected()) {
+      Logger.info("Connected!");
+    } else {
+      Logger.warn("Query was unable to connect! Exiting...");
+      return;
+    }
+
+    final TS3Api api = injector.getInstance(TS3Api.class);
+    api.login(botConfig.username(), botConfig.password());
+    api.selectVirtualServerById(botConfig.virtualServerId());
+    // Only set nickname if it's not the same as the current one.
+    if (!api.whoAmI().getNickname().equals(botConfig.nickname())) {
+      api.setNickname(botConfig.nickname());
+    }
+
     // Finally - after connecting to the server - start all checks/tasks etc.
     final Main main = injector.getInstance(Main.class);
     main.start();
@@ -71,6 +90,7 @@ public class Main {
       Configuration.set("writer.level", "debug");
       Configuration.set(
           "writer.format", "{date} [{thread}] {class}.{method}()\n{level}: {message}");
+      Logger.debug("Debug mode is enabled!");
     } else {
       Configuration.set("writer.level", "info");
       Configuration.set("writer.format", "{level}: {message|indent=4}");
@@ -79,8 +99,11 @@ public class Main {
 
   private void start() {
     bot.startRepeatingCheck();
-    bot.startListeningBotCommands();
-    bot.startListeningToPlayerMovement();
+    if (botConfig.enableMoveToggling()) {
+      Logger.info("Toggle moving is enabled.");
+      bot.startListeningBotCommands();
+      bot.startListeningToPlayerMovement();
+    }
 
     Runtime.getRuntime()
         .addShutdownHook(

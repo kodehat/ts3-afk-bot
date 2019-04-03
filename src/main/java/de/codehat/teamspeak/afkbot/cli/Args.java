@@ -12,6 +12,6 @@ public class Args {
       order = 1)
   private boolean debug = false;
 
-  @Parameter(names = "--help", description = "Shows help page", help = true, order = 2)
-  private boolean help;
+  @Parameter(names = {"-h", "--help"}, description = "Shows help page", help = true, order = 2)
+  private boolean help = false;
 }
