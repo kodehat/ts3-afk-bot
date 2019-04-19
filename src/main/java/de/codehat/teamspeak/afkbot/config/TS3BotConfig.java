@@ -37,11 +37,11 @@ public interface TS3BotConfig extends Config {
   @Key("query.check.period")
   int checkPeriod();
 
-  @DefaultValue(5 * 60 + "")
+  @DefaultValue(10 * 60 + "")
   @Key("query.threshold.move.muted")
   int moveMutedThreshold();
 
-  @DefaultValue(10 * 60 + "")
+  @DefaultValue(30 * 60 + "")
   @Key("query.threshold.move.listening")
   int moveListeningThreshold();
 
