@@ -67,7 +67,7 @@ public class IdleCheckTask extends TimerTask {
                 client.getNickname());
 
             // Inform client about move.
-            api.pokeClient(
+            api.sendPrivateMessage(
                 client.getId(),
                 "You have been moved, because you're idling for " + idleTime + " seconds.");
             // Inform channel that client was moved.
