@@ -62,7 +62,7 @@ public class IdleCheckTask extends TimerTask {
 
             // Move client. May throw exception if moving is not allowed or something weird happens.
             TS3Helper.safeExecute(
-                () -> api.moveClient(client.getId(), botConfig.afkChannelId()),
+                () -> api.moveClient(client.getId(), botConfig.moveToChannelId()),
                 "Unable to move client '{}'!",
                 client.getNickname());
 
@@ -82,7 +82,8 @@ public class IdleCheckTask extends TimerTask {
 
   private boolean canBeMoved(Client c) {
     return c.getId() != botClientId
-        && c.getChannelId() != botConfig.afkChannelId()
+        && c.getChannelId() == botConfig.listenChannelId()
+        && c.getChannelId() != botConfig.moveToChannelId()
         && c.isRegularClient()
         && !TS3ClientIgnoreList.getInstance().contains(c);
   }

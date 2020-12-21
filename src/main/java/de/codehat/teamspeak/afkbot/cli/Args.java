@@ -1,9 +1,7 @@
 package de.codehat.teamspeak.afkbot.cli;
 
 import com.beust.jcommander.Parameter;
-import lombok.Getter;
 
-@Getter
 public class Args {
 
   @Parameter(
@@ -14,4 +12,12 @@ public class Args {
 
   @Parameter(names = {"-h", "--help"}, description = "Shows help page", help = true, order = 2)
   private boolean help = false;
+
+  public boolean isDebug() {
+    return debug;
+  }
+
+  public boolean isHelp() {
+    return help;
+  }
 }

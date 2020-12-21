@@ -30,8 +30,12 @@ public interface TS3BotConfig extends Config {
   @Key("query.virtual.server.id")
   int virtualServerId();
 
-  @Key("query.afk.channel.id")
-  int afkChannelId();
+  // TODO: Allow multiple.
+  @Key("query.listen.channel.id")
+  int listenChannelId();
+
+  @Key("query.move.channel.id")
+  int moveToChannelId();
 
   @DefaultValue("5")
   @Key("query.check.period")
