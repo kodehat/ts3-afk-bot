@@ -15,7 +15,7 @@ public class PlayerMovementListener extends AbstractListener {
   @Override
   public void onClientLeave(ClientLeaveEvent e) {
     final int clientId = e.getClientId();
-    Logger.debug("Removing client with ID '{}' from ignore list, because he left.", clientId);
+    Logger.debug("Removing client with ID '{}' from ignore list, because he left the server.", clientId);
     TS3ClientIgnoreList.getInstance().listen(e.getClientId());
   }
 }

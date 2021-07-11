@@ -17,7 +17,7 @@ public final class TS3Helper {
     try {
       callable.call();
     } catch (TS3Exception e) {
-      Logger.error(e, "Unable to execute TeamSpeak3 command!");
+      Logger.error(e, errorMsg, args);
     }
   }
 
@@ -30,14 +30,6 @@ public final class TS3Helper {
   public static void safeExecute(final Callable callable) {
     safeExecute(callable, "Unable to execute TeamSpeak3 command!");
   }
-
-//  public static <T> T safeExecute(final Supplier<T> supplier, final String errorMsg, final Object... args) {
-//
-//  }
-//
-//  public static <T> T safeExecute(final Supplier<T> supplier) {
-//
-//  }
 
   @FunctionalInterface
   public interface Callable {

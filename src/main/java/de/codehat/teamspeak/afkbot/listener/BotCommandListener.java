@@ -40,7 +40,7 @@ public class BotCommandListener extends AbstractListener {
     } else if (e.getMessage().trim().equalsIgnoreCase("!list")) {
       String ignoredClients =
           TS3ClientIgnoreList.getInstance().getIgnoredClients().stream()
-              .map((clientId) -> api.getClientInfo(clientId).getNickname())
+              .map(clientId -> api.getClientInfo(clientId).getNickname())
               .collect(Collectors.joining(", "));
       api.sendPrivateMessage(senderId, "Ignored clients: " + ignoredClients);
     }

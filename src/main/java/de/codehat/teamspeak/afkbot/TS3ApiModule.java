@@ -3,7 +3,6 @@ package de.codehat.teamspeak.afkbot;
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
-import com.github.theholywaffle.teamspeak3.api.reconnect.ConnectionHandler;
 import com.github.theholywaffle.teamspeak3.api.reconnect.ReconnectStrategy;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -14,9 +13,11 @@ public class TS3ApiModule extends AbstractModule {
   @Provides
   @Singleton
   TS3Config providesTS3Config(TS3BotConfig botConfig) {
-    final TS3Config config = new TS3Config();
+    final var config = new TS3Config();
     config.setHost(botConfig.hostname());
     config.setQueryPort(botConfig.queryPort());
+    config.setProtocol(botConfig.protocol());
+    config.setLoginCredentials(botConfig.username(), botConfig.password());
     config.setEnableCommunicationsLogging(false);
     config.setReconnectStrategy(ReconnectStrategy.exponentialBackoff());
     return config;

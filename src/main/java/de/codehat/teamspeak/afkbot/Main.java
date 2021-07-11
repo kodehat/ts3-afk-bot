@@ -2,7 +2,6 @@ package de.codehat.teamspeak.afkbot;
 
 import com.beust.jcommander.JCommander;
 import com.github.theholywaffle.teamspeak3.TS3Api;
-import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -73,7 +72,6 @@ public class Main {
     }
 
     final TS3Api api = injector.getInstance(TS3Api.class);
-    api.login(botConfig.username(), botConfig.password());
     api.selectVirtualServerById(botConfig.virtualServerId());
     // Only set nickname if it's not the same as the current one.
     if (!api.whoAmI().getNickname().equals(botConfig.nickname())) {
@@ -81,7 +79,7 @@ public class Main {
     }
 
     // Finally - after connecting to the server - start all checks/tasks etc.
-    final Main main = injector.getInstance(Main.class);
+    final var main = injector.getInstance(Main.class);
     main.start();
   }
 

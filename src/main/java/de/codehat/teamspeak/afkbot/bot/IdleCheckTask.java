@@ -7,10 +7,8 @@ import com.google.inject.Inject;
 import de.codehat.teamspeak.afkbot.TS3ClientIgnoreList;
 import de.codehat.teamspeak.afkbot.TS3Helper;
 import de.codehat.teamspeak.afkbot.config.TS3BotConfig;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
+
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.tinylog.Logger;
 
@@ -71,21 +69,19 @@ public class IdleCheckTask extends TimerTask {
                 client.getId(),
                 "You have been moved, because you're idling for " + idleTime + " seconds.");
             // Inform channel that client was moved.
-            //            api.sendChannelMessage(
-            //                channel.getId(),
-            //                String.format(
-            //                    "Client %s was moved, because he was idling too long.",
-            // client.getNickname()));
+            api.sendChannelMessage(channel.getId(), String.format(
+                    "Client %s was moved, because he was idling too long (%ds > %ds).",
+                    client.getNickname(), idleTime, botConfig.moveMutedThreshold()));
           }
         });
   }
 
   private boolean canBeMoved(Client c) {
-    return c.getId() != botClientId
-        && c.getChannelId() == botConfig.listenChannelId()
-        && c.getChannelId() != botConfig.moveToChannelId()
-        && c.isRegularClient()
-        && !TS3ClientIgnoreList.getInstance().contains(c);
+    return c.getId() != botClientId // Is not bot itself.
+        && botConfig.listenChannelIds().contains(c.getChannelId())  // Is in one of the listening channels.
+        && c.getChannelId() != botConfig.moveToChannelId() // Is not in the AFK channel.
+        && c.isRegularClient() // Is a regular client (no bot, serverquery, etc.).
+        && !TS3ClientIgnoreList.getInstance().contains(c); // Is not ignored by ignore list.
   }
 
   private boolean isClientIdleAndMuted(final Client c) {
@@ -105,7 +101,7 @@ public class IdleCheckTask extends TimerTask {
     }
     channelMap.clear();
 
-    channels.forEach((c) -> channelMap.put(c.getId(), c));
+    channels.forEach(c -> channelMap.put(c.getId(), c));
   }
 
   private void refreshClients() {
@@ -114,6 +110,6 @@ public class IdleCheckTask extends TimerTask {
     }
     clientMap.clear();
 
-    api.getClients().forEach((c) -> clientMap.put(c, channelMap.get(c.getChannelId())));
+    api.getClients().forEach(c -> clientMap.put(c, channelMap.get(c.getChannelId())));
   }
 }

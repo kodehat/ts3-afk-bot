@@ -6,9 +6,9 @@ import java.util.Set;
 
 public class TS3ClientIgnoreList {
 
-  private static TS3ClientIgnoreList ourInstance = new TS3ClientIgnoreList();
+  private static final TS3ClientIgnoreList ourInstance = new TS3ClientIgnoreList();
 
-  private Set<Integer> ignoredClients;
+  private final Set<Integer> ignoredClients;
 
   private TS3ClientIgnoreList() {
     this.ignoredClients = new HashSet<>();
@@ -57,6 +57,6 @@ public class TS3ClientIgnoreList {
   }
 
   public Set<Integer> getIgnoredClients() {
-    return ignoredClients;
+    return new HashSet<>(ignoredClients);
   }
 }
